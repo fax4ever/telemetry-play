@@ -3,6 +3,7 @@ package fax.play;
 import java.util.Random;
 
 import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Scope;
@@ -18,7 +19,7 @@ public class OTelPlay {
    public void play() throws Exception {
       Tracer tracer = oTelConfig.getTracer("fax.play.tracing", "1.0.0");
 
-      Span span = tracer.spanBuilder("parent-span").startSpan();
+      Span span = tracer.spanBuilder("parent-span").setSpanKind(SpanKind.CLIENT).startSpan();
       try (Scope scope = span.makeCurrent()) {
          Thread.sleep(300);
          span.addEvent("init");

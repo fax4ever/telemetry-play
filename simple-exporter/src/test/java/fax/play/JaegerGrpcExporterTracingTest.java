@@ -4,7 +4,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.exporter.jaeger.JaegerGrpcSpanExporter;
+import io.opentelemetry.sdk.resources.Resource;
+import io.opentelemetry.semconv.resource.attributes.ResourceAttributes;
 
 public class JaegerGrpcExporterTracingTest {
 
@@ -17,7 +20,10 @@ public class JaegerGrpcExporterTracingTest {
 
    @BeforeEach
    public void before() {
-      oTelConfig = new OTelConfig(jaegerGrpcExporter);
+      Resource resource = Resource.create(Attributes.of(
+            ResourceAttributes.SERVICE_NAME, "simple-exporter-service"));
+
+      oTelConfig = new OTelConfig(jaegerGrpcExporter, resource);
    }
 
    @AfterEach

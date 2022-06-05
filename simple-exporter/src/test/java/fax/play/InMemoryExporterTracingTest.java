@@ -22,7 +22,7 @@ public class InMemoryExporterTracingTest {
 
    @BeforeEach
    public void before() {
-      oTelConfig = new OTelConfig(inMemoryExporter);
+      oTelConfig = new OTelConfig(inMemoryExporter, null);
    }
 
    @AfterEach
