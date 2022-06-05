@@ -1,5 +1,6 @@
 package fax.play;
 
+import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator;
@@ -41,6 +42,7 @@ public class OTelConfig {
 
    public void shutdown() {
       tracerProvider.shutdown();
+      GlobalOpenTelemetry.resetForTest();
    }
 
    public Tracer getTracer(String instrumentationScopeName, String instrumentationScopeVersion) {
