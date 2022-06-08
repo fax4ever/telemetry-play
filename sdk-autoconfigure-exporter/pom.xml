@@ -58,14 +58,53 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>3.0.0-M6</version>
-                    <configuration>
-                        <argLine>-ea
-                            -Dotel.traces.exporter=jaeger
-                            -Dotel.exporter.jaeger.endpoint=http://localhost:14250
-                            -Dotel.service.name=sdk-autoconfigure-exporter</argLine>
-                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
     </build>
+
+    <profiles>
+        <profile>
+            <id>exporter-jaeger</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <argLine>-ea
+                                -Dotel.traces.exporter=jaeger
+                                -Dotel.exporter.jaeger.endpoint=http://localhost:14250
+                                -Dotel.service.name=sdk-autoconfigure-exporter
+                            </argLine>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <!--
+                Run Jaeger with collector.otlp.enabled=true
+             -->
+            <id>exporter-otel</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <argLine>-ea
+                                -Dotel.traces.exporter=otlp
+                                -Dotel.exporter.otlp.endpoint=http://localhost:4317
+                                -Dotel.service.name=sdk-autoconfigure-exporter
+                            </argLine>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
