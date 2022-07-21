@@ -1,5 +1,7 @@
 package fax.play;
 
+import java.util.Collections;
+
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.Tracer;
@@ -10,7 +12,11 @@ public class OTelConfig {
    private final OpenTelemetry openTelemetry;
 
    public OTelConfig() {
+
       openTelemetry = AutoConfiguredOpenTelemetrySdk.builder()
+            // At the moment we don't export Infinispan server metrics with OpenTelemetry,
+            // so we manually disable any metrics export
+            .addPropertiesSupplier(() -> Collections.singletonMap("otel.metrics.exporter", "none"))
             .build()
             .getOpenTelemetrySdk();
    }
