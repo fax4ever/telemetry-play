@@ -4,26 +4,29 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
+import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter;
 import io.opentelemetry.sdk.resources.Resource;
-import io.opentelemetry.semconv.resource.attributes.ResourceAttributes;
 
 public class OtlpGrpcExporterTracingTest {
-
-   private final OtlpGrpcSpanExporter OtlpGrpcExporter =
-         OtlpGrpcSpanExporter.builder()
-               .setEndpoint("http://localhost:4317")
-               .build();
-
    private OTelConfig oTelConfig;
 
    @BeforeEach
    public void before() {
-      Resource resource = Resource.create(Attributes.of(
-            ResourceAttributes.SERVICE_NAME, "simple-exporter-service"));
+      ManagedChannel managedChannel = ManagedChannelBuilder.forAddress("localhost", 4317).usePlaintext().build();
 
-      oTelConfig = new OTelConfig(OtlpGrpcExporter, resource);
+      OtlpGrpcSpanExporter otlpGrpcExporter =
+            OtlpGrpcSpanExporter.builder()
+                  .setChannel(managedChannel)
+                  .build();
+
+      Resource resource = Resource.create(Attributes.of(
+            AttributeKey.stringKey("service.name"), "simple-exporter-service"));
+
+      oTelConfig = new OTelConfig(otlpGrpcExporter, resource);
    }
 
    @AfterEach
