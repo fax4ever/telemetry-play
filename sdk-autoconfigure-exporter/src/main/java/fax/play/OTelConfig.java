@@ -2,6 +2,7 @@ package fax.play;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -23,14 +24,17 @@ public class OTelConfig {
       properties.put("otel.exporter.otlp.endpoint", "http://localhost:4317");
 
       ManagedChannel managedChannel = ManagedChannelBuilder.forAddress("localhost", 4317).usePlaintext().build();
-      OtlpGrpcSpanExporter otlpGrpcExporter =
-            OtlpGrpcSpanExporter.builder()
-                  .setChannel(managedChannel)
-                  .build();
 
       openTelemetry = AutoConfiguredOpenTelemetrySdk.builder()
             .addPropertiesSupplier(() -> properties)
-            .addSpanExporterCustomizer((spanExporter, configProperties) -> otlpGrpcExporter)
+            .addSpanExporterCustomizer((spanExporter, configProperties) -> {
+               if (spanExporter instanceof OtlpGrpcSpanExporter) {
+                  spanExporter.shutdown().join(10, TimeUnit.SECONDS);
+                  return ((OtlpGrpcSpanExporter) spanExporter).toBuilder().setChannel(managedChannel).build();
+               }
+
+               return spanExporter;
+            })
             .build()
             .getOpenTelemetrySdk();
    }
