@@ -11,6 +11,7 @@
     <modules>
         <module>simple-exporter</module>
         <module>sdk-autoconfigure-exporter</module>
+        <module>http-otlp-exporter</module>
     </modules>
 
     <properties>
